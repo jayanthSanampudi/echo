@@ -86,12 +86,15 @@ class VectorStore:
         filters: dict[str, Any] | None = None,
     ) -> list[VectorHit]:
         flt = self._build_filter(filters) if filters else None
-        result = self.client.search(
-            collection_name=collection, query_vector=vector, query_filter=flt, limit=k
+        result = self.client.query_points(
+            collection_name=collection,
+            query=vector,
+            query_filter=flt,
+            limit=k,
         )
         return [
             VectorHit(id=str(r.id), score=float(r.score), payload=dict(r.payload or {}))
-            for r in result
+            for r in result.points
         ]
 
     def delete(self, collection: str, ids: list[str]) -> None:

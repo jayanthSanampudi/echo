@@ -52,11 +52,13 @@ class Settings(BaseSettings):
     model_cache_dir: str = "./models/cache"
 
     # LLM / RAG
-    llm_provider: Literal["openai", "anthropic", "ollama", "mock"] = "mock"
+    llm_provider: Literal["openai", "anthropic", "ollama", "nvidia", "mock"] = "mock"
     llm_model: str = "gpt-4o-mini"
     openai_api_key: str | None = None
     anthropic_api_key: str | None = None
     ollama_host: str = "http://localhost:11434"
+    nvidia_api_key: str | None = None
+    nvidia_base_url: str = "https://integrate.api.nvidia.com/v1"
 
     # Storage
     storage_backend: Literal["local", "s3"] = "local"

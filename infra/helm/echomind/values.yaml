@@ -66,4 +66,5 @@ config:
 secrets:
   openaiApiKey: ""
   anthropicApiKey: ""
+  nvidiaApiKey: ""
   qdrantApiKey: ""

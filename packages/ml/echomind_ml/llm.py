@@ -1,6 +1,7 @@
 """LLM client abstraction.
 
-Supports OpenAI, Anthropic, Ollama (local), and a "mock" provider that produces
+Supports OpenAI, Anthropic, Ollama (local), NVIDIA NIM (free tier), and a "mock"
+provider that produces
 a deterministic extractive answer from the retrieved context. The mock provider
 exists so the full RAG pipeline runs in CI and on laptops without API keys.
 """
@@ -110,6 +111,41 @@ class _OllamaLLM:
         return r.json()["message"]["content"]
 
 
+class _NvidiaLLM:
+    """NVIDIA NIM chat completions (OpenAI-compatible, e.g. minimaxai/minimax-m3)."""
+
+    def __init__(self, model: str, api_key: str, base_url: str) -> None:
+        import httpx
+
+        self._model = model
+        self._api_key = api_key
+        self._base_url = base_url.rstrip("/")
+        self._client = httpx.Client(timeout=120.0)
+
+    def complete(self, system: str, user: str, max_tokens: int = 512) -> str:
+        r = self._client.post(
+            f"{self._base_url}/chat/completions",
+            headers={
+                "Authorization": f"Bearer {self._api_key}",
+                "Accept": "application/json",
+            },
+            json={
+                "model": self._model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user},
+                ],
+                "max_tokens": max_tokens,
+                "temperature": 1.00,
+                "top_p": 0.95,
+                "stream": False,
+                "chat_template_kwargs": {"thinking_mode": "disabled"},
+            },
+        )
+        r.raise_for_status()
+        return r.json()["choices"][0]["message"]["content"] or ""
+
+
 def _split_sentences(text: str) -> list[str]:
     parts: list[str] = []
     cur: list[str] = []
@@ -137,5 +173,8 @@ def get_llm() -> LLMClient:
     if s.llm_provider == "ollama":
         logger.info("llm.init", provider="ollama", model=s.llm_model, host=s.ollama_host)
         return _OllamaLLM(s.llm_model, s.ollama_host)
+    if s.llm_provider == "nvidia" and s.nvidia_api_key:
+        logger.info("llm.init", provider="nvidia", model=s.llm_model, base_url=s.nvidia_base_url)
+        return _NvidiaLLM(s.llm_model, s.nvidia_api_key, s.nvidia_base_url)
     logger.info("llm.init", provider="mock", reason="no api key or provider set")
     return _MockLLM()

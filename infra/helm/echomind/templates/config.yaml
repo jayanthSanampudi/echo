@@ -28,4 +28,5 @@ stringData:
   DATABASE_URL: "postgresql+psycopg://{{ .Values.postgres.credentials.user }}:{{ .Values.postgres.credentials.password }}@{{ include "echomind.fullname" . }}-postgres:5432/{{ .Values.postgres.credentials.database }}"
   OPENAI_API_KEY: {{ .Values.secrets.openaiApiKey | quote }}
   ANTHROPIC_API_KEY: {{ .Values.secrets.anthropicApiKey | quote }}
+  NVIDIA_API_KEY: {{ .Values.secrets.nvidiaApiKey | quote }}
   QDRANT_API_KEY: {{ .Values.secrets.qdrantApiKey | quote }}
