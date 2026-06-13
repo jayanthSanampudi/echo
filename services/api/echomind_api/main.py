@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from echomind_api.deps import vector_store
 from echomind_api.metrics import setup_metrics
 from echomind_api.middleware import RequestLoggingMiddleware
 from echomind_api.routes import (
@@ -24,7 +25,6 @@ from echomind_api.routes import (
 from echomind_core.config import get_settings
 from echomind_core.db import create_all
 from echomind_core.logging import configure_logging, get_logger
-from echomind_core.vector import VectorStore
 
 logger = get_logger(__name__)
 
@@ -37,7 +37,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
     # ensure DB + vector collections exist
     create_all()
-    VectorStore().ensure_default_collections()
+    vector_store().ensure_default_collections()
     logger.info("api.ready")
     yield
     logger.info("api.shutdown")

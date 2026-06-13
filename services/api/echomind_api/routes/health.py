@@ -5,8 +5,8 @@ from __future__ import annotations
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 
+from echomind_api.deps import vector_store
 from echomind_core.db import get_engine
-from echomind_core.vector import VectorStore
 
 router = APIRouter(tags=["health"])
 
@@ -26,7 +26,7 @@ def ready() -> JSONResponse:
     except Exception:
         pass
     try:
-        VectorStore().client.get_collections()
+        vector_store().client.get_collections()
         checks["qdrant"] = True
     except Exception:
         pass

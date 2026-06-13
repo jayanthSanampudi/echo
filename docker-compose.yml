@@ -46,6 +46,8 @@ services:
       context: .
       dockerfile: services/api/Dockerfile
     container_name: echomind-api
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql+psycopg://echomind:echomind@postgres:5432/echomind
       QDRANT_MODE: server
