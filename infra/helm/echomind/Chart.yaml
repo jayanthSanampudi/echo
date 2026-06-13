@@ -1,0 +1,18 @@
+apiVersion: v2
+name: echomind
+description: AI-powered audiobook intelligence platform
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+icon: https://raw.githubusercontent.com/USERNAME/echomind/main/docs/images/logo.png
+maintainers:
+  - name: EchoMind contributors
+keywords:
+  - ml
+  - ai
+  - audio
+  - whisper
+  - rag
+  - recommender
+sources:
+  - https://github.com/USERNAME/echomind

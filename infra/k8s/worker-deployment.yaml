@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: echomind
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: worker }
+  template:
+    metadata:
+      labels: { app: worker }
+    spec:
+      containers:
+        - name: worker
+          image: echomind/worker:latest
+          imagePullPolicy: IfNotPresent
+          args: ["watch", "/data/audio"]
+          envFrom:
+            - configMapRef: { name: echomind-config }
+            - secretRef:    { name: echomind-secrets }
+          volumeMounts:
+            - { name: models, mountPath: /models }
+            - { name: data,   mountPath: /data   }
+          resources:
+            requests: { cpu: "500m", memory: "1Gi" }
+            limits:   { cpu: "2",    memory: "4Gi" }
+      volumes:
+        - name: models
+          emptyDir: {}
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-pvc
+  namespace: echomind
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 50Gi

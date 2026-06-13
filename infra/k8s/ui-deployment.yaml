@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+  namespace: echomind
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: ui }
+  template:
+    metadata:
+      labels: { app: ui }
+    spec:
+      containers:
+        - name: ui
+          image: echomind/ui:latest
+          ports:
+            - { containerPort: 8501 }
+          env:
+            - { name: ECHOMIND_API_URL, value: "http://api:80" }
+          readinessProbe:
+            httpGet: { path: /_stcore/health, port: 8501 }
+            initialDelaySeconds: 10
+          resources:
+            requests: { cpu: "100m", memory: "256Mi" }
+            limits:   { cpu: "500m", memory: "512Mi" }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui
+  namespace: echomind
+spec:
+  selector: { app: ui }
+  ports:
+    - { name: http, port: 80, targetPort: 8501 }

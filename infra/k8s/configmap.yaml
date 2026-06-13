@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: echomind-config
+  namespace: echomind
+data:
+  API_HOST: "0.0.0.0"
+  API_PORT: "8000"
+  API_LOG_LEVEL: "info"
+  QDRANT_MODE: "server"
+  QDRANT_URL: "http://qdrant:6333"
+  CACHE_BACKEND: "redis"
+  REDIS_URL: "redis://redis:6379/0"
+  WHISPER_MODEL: "tiny"
+  TEXT_EMBED_MODEL: "sentence-transformers/all-MiniLM-L6-v2"
+  AUDIO_EMBED_MODEL: "laion/clap-htsat-unfused"
+  LLM_PROVIDER: "mock"
+  STORAGE_BACKEND: "local"
+  STORAGE_PATH: "/data"
+  MODEL_CACHE_DIR: "/models"
+  ENABLE_PROMETHEUS: "true"
